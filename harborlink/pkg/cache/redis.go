@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
+	"github.com/alicebob/miniredis/v2"
 	"github.com/redis/go-redis/v9"
 
 	"github.com/yourname/harborlink/pkg/config"
@@ -14,25 +16,44 @@ import (
 // Client wraps the Redis client
 type Client struct {
 	*redis.Client
+	miniRedis *miniredis.Miniredis // Keep reference for in-memory mode
 }
 
 // NewClient creates a new Redis client
 func NewClient(cfg *config.RedisConfig) (*Client, error) {
-	client := redis.NewClient(&redis.Options{
-		Addr:     cfg.Addr(),
-		Password: cfg.Password,
-		DB:       cfg.DB,
-	})
+	var client *redis.Client
+	var miniRedis *miniredis.Miniredis
 
-	// Test connection
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	// Use miniredis if host is "miniredis" or empty
+	if cfg.Host == "miniredis" || cfg.Host == "" {
+		// Use in-memory miniredis for testing/development
+		var err error
+		miniRedis, err = miniredis.Run()
+		if err != nil {
+			return nil, fmt.Errorf("failed to start miniredis: %w", err)
+		}
+		client = redis.NewClient(&redis.Options{
+			Addr: miniRedis.Addr(),
+		})
+		log.Printf("Connected to miniredis at %s", miniRedis.Addr())
+	} else {
+		// Use real Redis server
+		client = redis.NewClient(&redis.Options{
+			Addr:     cfg.Addr(),
+			Password: cfg.Password,
+			DB:       cfg.DB,
+		})
 
-	if err := client.Ping(ctx).Err(); err != nil {
-		return nil, fmt.Errorf("failed to connect to Redis: %w", err)
+		// Test connection
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		if err := client.Ping(ctx).Err(); err != nil {
+			return nil, fmt.Errorf("failed to connect to Redis: %w", err)
+		}
 	}
 
-	return &Client{client}, nil
+	return &Client{Client: client, miniRedis: miniRedis}, nil
 }
 
 // Close closes the Redis connection

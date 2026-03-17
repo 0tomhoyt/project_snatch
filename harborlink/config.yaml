@@ -10,7 +10,7 @@ server:
   idle_timeout: 60s
 
 database:
-  host: localhost
+  host: sqlite
   port: 5432
   name: harborlink
   user: postgres
@@ -21,7 +21,7 @@ database:
   conn_max_lifetime: 5m
 
 redis:
-  host: localhost
+  host: miniredis
   port: 6379
   password: ""
   db: 0
