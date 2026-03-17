@@ -1,0 +1,75 @@
+# HarborLink Configuration
+# ========================
+
+server:
+  port: 8080
+  host: "0.0.0.0"
+  mode: debug          # debug, release, test
+  read_timeout: 10s
+  write_timeout: 10s
+  idle_timeout: 60s
+
+database:
+  host: localhost
+  port: 5432
+  name: harborlink
+  user: postgres
+  password: ""
+  ssl_mode: disable
+  max_open_conns: 25
+  max_idle_conns: 5
+  conn_max_lifetime: 5m
+
+redis:
+  host: localhost
+  port: 6379
+  password: ""
+  db: 0
+
+# Carrier adapter configurations
+carriers:
+  - name: maersk
+    code: MAEU
+    adapter: mock
+    enabled: true
+    base_url: https://api.maersk.com
+    api_key: ""
+    rate_limit: 100      # requests per minute
+    poll_enabled: true
+    poll_interval: 5s    # Maersk 5秒轮询一次
+    poll_timeout: 3s
+    burst_limit: 10
+    max_retries: 3
+    retry_interval: 1s
+
+  - name: msc
+    code: MSCU
+    adapter: mock
+    enabled: true
+    base_url: https://api.msc.com
+    api_key: ""
+    rate_limit: 100
+    poll_enabled: true
+    poll_interval: 10s   # MSC 10秒轮询一次
+    poll_timeout: 5s
+    burst_limit: 5
+    max_retries: 3
+    retry_interval: 2s
+
+  - name: cma_cgm
+    code: CMDU
+    adapter: mock
+    enabled: false
+    base_url: https://api.cma-cgm.com
+    api_key: ""
+    rate_limit: 100
+    poll_enabled: true
+    poll_interval: 8s
+    poll_timeout: 4s
+    burst_limit: 5
+    max_retries: 3
+    retry_interval: 2s
+
+logging:
+  level: info          # debug, info, warn, error
+  format: json         # json, text

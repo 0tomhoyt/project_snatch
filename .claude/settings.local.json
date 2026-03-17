@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(GOPROXY=https://goproxy.cn,direct go test ./pkg/config/... -v)",
+      "Bash(HARBORLINK_SERVER_PORT=3000 HARBORLINK_SERVER_MODE=release GOPROXY=https://goproxy.cn,direct go run ./cmd/api/main.go)",
+      "Bash(GOPROXY=https://goproxy.cn,direct go test ./... -v 2>&1 | tail -30)",
+      "Bash(GOPROXY=https://goproxy.cn,direct go get github.com/gin-gonic/gin)",
+      "Bash(GOPROXY=https://goproxy.cn,direct go build ./...)",
+      "Bash(GOPROXY=https://goproxy.cn,direct go test ./... -v 2>&1 | tail -40)",
+      "Bash(timeout 3 go run ./cmd/api/main.go 2>&1 || true)",
+      "Bash(GOPROXY=https://goproxy.cn,direct go get gorm.io/gorm gorm.io/driver/postgres)",
+      "Bash(GOPROXY=https://goproxy.cn,direct go test ./internal/repository/... -v 2>&1 | tail -50)",
+      "Bash(GOPROXY=https://goproxy.cn,direct go test ./internal/repository/... -v 2>&1 | tail -30)",
+      "Bash(GOPROXY=https://goproxy.cn,direct go test ./... -v 2>&1 | grep -E \"^\\(=== RUN|--- PASS|--- FAIL|PASS|FAIL|ok\\)\" | tail -40)",
+      "Bash(GOPROXY=https://goproxy.cn,direct go get github.com/alicebob/miniredis/v2)",
+      "Bash(go test ./... -cover ./... 2>&)",
+      "Bash(go test -v -cover ./... -cover ./... && && cover ./... -cover ./)",
+      "Bash(go test -v ./...)",
+      "Bash(cd /Users/tomhoyt/Desktop/priject_snatch/harborlink && go build ./...)",
+      "Bash(go test ./...)",
+      "Bash(go build ./... && go test ./...)",
+      "Bash(cd /Users/tomhoyt/Desktop/priject_snatch/harborlink && go build ./... 2>&1)",
+      "Bash(go build ./... 2>&1)",
+      "Bash(go test ./internal/service/... 2>&1)",
+      "Bash(go test ./internal/handler/... 2>&1)",
+      "Bash(go test ./internal/middleware/... 2>&1)",
+      "Bash(go test ./internal/validation/... 2>&1)",
+      "Bash(go test -cover ./... 2>&1)"
+    ]
+  }
+}
